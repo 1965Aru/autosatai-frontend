@@ -1,16 +1,17 @@
 // app/api/login/route.js
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
-const { JWT_SECRET } = process.env;
+import connectToDatabase from "@/lib/config/db";
+import User              from "@/models/User";
+import bcrypt            from "bcryptjs";
+import jwt               from "jsonwebtoken";
 
 export const POST = async (req) => {
+  // ensure we’re connected to Mongo
+  await connectToDatabase();
+
   const { email, password } = await req.json();
 
-  // 1) Look up user by email
-  const user = await prisma.user.findUnique({ where: { email } });
+  // Look up user by email
+  const user = await User.findOne({ email });
   if (!user) {
     return new Response(
       JSON.stringify({ error: "Invalid email or password" }),
@@ -18,7 +19,7 @@ export const POST = async (req) => {
     );
   }
 
-  // 2) Compare password
+  // Compare password
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return new Response(
@@ -27,16 +28,23 @@ export const POST = async (req) => {
     );
   }
 
-  // 3) Sign a JWT
+  // Sign a JWT
   const token = jwt.sign(
-    { userId: user.id, email: user.email },
-    JWT_SECRET,
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
 
-  // 4) Return token (and optionally user data without password)
+  // Return token (and user data without password)
   return new Response(
-    JSON.stringify({ token, user: { id: user.id, fullName: user.fullName, email: user.email } }),
+    JSON.stringify({
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email
+      }
+    }),
     { status: 200 }
   );
 };
