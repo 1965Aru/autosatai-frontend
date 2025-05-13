@@ -7,7 +7,7 @@ import { FiDownload, FiExternalLink } from "react-icons/fi";
 
 // Ensure this points to your backend; you can override via NEXT_PUBLIC_API_BASE_URL in .env.local
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend.onrender.com";
 
 const AgricultureDatasetResultsPage = () => {
   const [datasets, setDatasets] = useState([]);
@@ -46,10 +46,9 @@ const AgricultureDatasetResultsPage = () => {
     setBusy(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/agri/analyse`, {
+      const res = await fetch(`/api/agri/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        mode: "cors",
         body: JSON.stringify({
           dataset_id: ds.id,
           analysis,
@@ -124,10 +123,9 @@ const AgricultureDatasetResultsPage = () => {
         },
       }));
 
-      const res = await fetch(`${API_BASE}/api/agri/analyse-all`, {
+      const res = await fetch(`/api/agri/analyse-all`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        mode: "cors",
         body: JSON.stringify({ jobs }),
       });
 

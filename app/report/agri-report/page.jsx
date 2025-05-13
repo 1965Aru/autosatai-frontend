@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import axios from "axios";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend.onrender.com";
 
 export default function AgriReportPage() {
   const router = useRouter();
