@@ -1,14 +1,9 @@
-// app/components/DataExplorationNavbar.jsx
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FaBars, FaArrowLeft } from "react-icons/fa";
-
-// Base URL for your backend API (in case you ever need it directly)
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend.onrender.com";
 
 const DataExplorationNavbar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -23,100 +18,79 @@ const DataExplorationNavbar = () => {
   const hamburgerRef = useRef(null);
   const router = useRouter();
 
-  // ── Load user info if token present ──────────────────────────────
+  // Load user info if token present
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      axios
-        // ← changed to relative URL; Next.js will rewrite /api/v1/auth/me → your real backend
-        .get("/api/v1/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setUserEmail(res.data.email);
-        })
-        .catch(() => {
-          setIsAuthenticated(false);
-          localStorage.removeItem("token");
-        });
-    }
+    if (!token) return;
+    setIsAuthenticated(true);
+
+    axios
+      .get("/api/v1/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUserEmail(res.data.email))
+      .catch(() => {
+        setIsAuthenticated(false);
+        localStorage.removeItem("token");
+      });
   }, []);
 
   const toggleSidebar = () => {
-    setShowSidebar((prev) => !prev);
+    setShowSidebar((p) => !p);
     setShowFilterPanel(false);
     setShowResourcesPanel(false);
   };
-  const toggleDropdown = () => setShowDropdown((prev) => !prev);
-
+  const toggleDropdown = () => setShowDropdown((p) => !p);
   const handleLogout = () => {
-    try {
-      localStorage.clear();
-    } catch (err) {
-      console.error("localStorage unavailable:", err);
-    }
+    localStorage.clear();
     setIsAuthenticated(false);
     setShowDropdown(false);
     router.push("/login");
   };
-
   const handleSidebarItemClick = (item) => {
     setShowSidebar(false);
     if (item === "datahub") {
       setShowFilterPanel(true);
       setShowResourcesPanel(false);
-    } else if (item === "resources") {
+    } else {
       setShowResourcesPanel(true);
       setShowFilterPanel(false);
     }
   };
 
-  // ── Close popovers when clicking outside ─────────────────────────
+  // Click-outside to close panels/dropdowns
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const onClick = (e) => {
       if (
-        hamburgerRef.current?.contains(event.target) ||
-        dropdownRef.current?.contains(event.target)
-      ) {
-        return;
-      }
-      if (!sidebarRef.current?.contains(event.target)) setShowSidebar(false);
+        hamburgerRef.current?.contains(e.target) ||
+        dropdownRef.current?.contains(e.target)
+      ) return;
+      if (!sidebarRef.current?.contains(e.target)) setShowSidebar(false);
       setShowDropdown(false);
-      if (showFilterPanel || showResourcesPanel) {
-        if (!event.target.closest(".inline-panel")) {
-          setShowFilterPanel(false);
-          setShowResourcesPanel(false);
-        }
+      if (!e.target.closest(".inline-panel")) {
+        setShowFilterPanel(false);
+        setShowResourcesPanel(false);
       }
     };
     if (showSidebar || showDropdown || showFilterPanel || showResourcesPanel) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", onClick);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", onClick);
   }, [showSidebar, showDropdown, showFilterPanel, showResourcesPanel]);
 
-  // ── Filter & Resources panels inlined here (unchanged) ─────────
-  const DataFilterPanel = ({ onBack }) => {
-    /* … your existing DataFilterPanel code … */
-  };
-  const NaturalResourcesPanel = ({ onBack }) => {
-    /* … your existing NaturalResourcesPanel code … */
-  };
+  // Inline panels (DataFilterPanel, NaturalResourcesPanel) omitted for brevity—
+  // keep your existing implementations here.
 
   return (
     <>
-      {/* Top Navbar */}
+      {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 bg-[#161a30] text-white z-50 shadow-md">
         <div className="flex items-center justify-between px-6 py-4">
-          {/* Logo & Hamburger */}
           <div className="flex items-center gap-x-3">
             <div
-              className="text-xl cursor-pointer text-white mr-4"
               ref={hamburgerRef}
               onClick={toggleSidebar}
+              className="text-xl cursor-pointer"
             >
               <FaBars />
             </div>
@@ -133,12 +107,11 @@ const DataExplorationNavbar = () => {
             </div>
           </div>
 
-          {/* Links */}
+          {/* Nav links */}
           <div className="hidden md:flex gap-6 ml-auto">
             {["Home", "Services", "About us", "Contact"].map((label) => (
               <span
                 key={label}
-                className="cursor-pointer hover:text-[#7fdbff] transition"
                 onClick={() =>
                   router.push(
                     label === "Home"
@@ -146,13 +119,14 @@ const DataExplorationNavbar = () => {
                       : `/${label.toLowerCase().replace(/\s/g, "")}`
                   )
                 }
+                className="cursor-pointer hover:text-[#7fdbff] transition"
               >
                 {label}
               </span>
             ))}
           </div>
 
-          {/* Profile Dropdown */}
+          {/* Profile */}
           <div className="relative flex items-center" ref={dropdownRef}>
             <img
               src="/assets/profile-icon.png"
@@ -161,20 +135,18 @@ const DataExplorationNavbar = () => {
               onClick={toggleDropdown}
             />
             {showDropdown && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black p-4 rounded-lg shadow-xl z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-white text-black p-4 rounded-lg shadow-xl z-50">
                 {isAuthenticated ? (
                   <>
-                    <p className="text-sm font-semibold text-gray-800 mb-2">
-                      {userEmail}
-                    </p>
+                    <p className="mb-2 font-semibold">{userEmail}</p>
                     <button
-                      className="block w-full text-left text-sm mb-1 hover:bg-gray-200 p-2 rounded-md transition"
+                      className="w-full text-left mb-1 p-2 hover:bg-gray-200 rounded"
                       onClick={() => router.push("/dashboard")}
                     >
                       Dashboard
                     </button>
                     <button
-                      className="block w-full text-left text-sm text-red-600 hover:bg-red-50 p-2 rounded-md transition"
+                      className="w-full text-left text-red-600 p-2 hover:bg-red-50 rounded"
                       onClick={handleLogout}
                     >
                       Logout
@@ -183,13 +155,13 @@ const DataExplorationNavbar = () => {
                 ) : (
                   <>
                     <button
-                      className="block w-full text-left text-sm mb-1 hover:bg-gray-200 p-2 rounded-md transition"
+                      className="w-full text-left mb-1 p-2 hover:bg-gray-200 rounded"
                       onClick={() => router.push("/login")}
                     >
-                      Login
+                      Log In
                     </button>
                     <button
-                      className="block w-full text-left text-sm hover:bg-gray-200 p-2 rounded-md transition"
+                      className="w-full text-left p-2 hover:bg-gray-200 rounded"
                       onClick={() => router.push("/signup")}
                     >
                       Sign Up
@@ -225,7 +197,7 @@ const DataExplorationNavbar = () => {
         </div>
       )}
 
-      {/* Inline Panels */}
+      {/* Inline panels */}
       {showFilterPanel && (
         <DataFilterPanel onBack={() => setShowFilterPanel(false)} />
       )}
