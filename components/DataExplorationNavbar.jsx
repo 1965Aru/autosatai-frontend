@@ -7,7 +7,7 @@ import { FaBars, FaArrowLeft } from "react-icons/fa";
 
 // Base URL for your backend API
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-cutv.onrender.com";
 
 const DataExplorationNavbar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -28,7 +28,7 @@ const DataExplorationNavbar = () => {
     if (token) {
       setIsAuthenticated(true);
       axios
-        .get("http://localhost:8000/api/v1/auth/me", {
+        .get("https://autosatai-backend-cutv.onrender.com/api/v1/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setUserEmail(res.data.email))
@@ -348,7 +348,7 @@ const DataExplorationNavbar = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:5000/natural-resources/info",
+          "https://autosatai-backend-cutv.onrender.com/natural-resources/info",
           { location },
           { headers: { "Content-Type": "application/json" } }
         );
