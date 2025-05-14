@@ -121,7 +121,7 @@ const AgricultureHotspotDashboardPage = () => {
       breakpoints: seriesResults.breakpoints,
     };
 
-    const res = await fetch(`/report/agri`, {
+    const res = await fetch(`${API_BASE}/api/report/agri`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

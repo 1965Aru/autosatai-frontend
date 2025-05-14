@@ -6,7 +6,9 @@ import { FaChartLine } from "react-icons/fa";
 import { FiDownload, FiExternalLink } from "react-icons/fi";
 
 // Ensure this points to your backend; you can override via NEXT_PUBLIC_API_BASE_URL in .env.local
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://autosatai-backend-r4ol.onrender.com";
 
 const DatasetResultsPage = () => {
   const [datasets, setDatasets] = useState([]);
@@ -46,7 +48,7 @@ const DatasetResultsPage = () => {
     setBusy(true);
 
     try {
-      const res = await fetch(`/api/analyse`, {
+      const res = await fetch(`${API_BASE}/api/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -127,7 +129,7 @@ const DatasetResultsPage = () => {
         assets: { data: ds.assets.data },
       }));
 
-      const res = await fetch(`/api/analyse-all-nights`, {
+      const res = await fetch(`${API_BASE}/api/analyse-all-nights`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobs }),

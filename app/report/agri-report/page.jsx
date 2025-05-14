@@ -18,6 +18,9 @@ import axios from "axios";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
 
+// ensure all axios calls use your backend URL
+axios.defaults.baseURL = API_BASE;
+
 export default function AgriReportPage() {
   const router = useRouter();
   const [state, setState] = useState({

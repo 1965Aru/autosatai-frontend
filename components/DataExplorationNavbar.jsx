@@ -7,7 +7,8 @@ import { FaBars, FaArrowLeft } from "react-icons/fa";
 
 // Base URL for your backend API
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://autosatai-backend-r4ol.onrender.com";
 
 const DataExplorationNavbar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -27,8 +28,7 @@ const DataExplorationNavbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
-      axios
-        .get("https://autosatai-backend-r4ol.onrender.com/api/v1/auth/me", {
+      axios.get(`${API_BASE}/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setUserEmail(res.data.email))
@@ -348,7 +348,7 @@ const DataExplorationNavbar = () => {
 
       try {
         const res = await axios.post(
-          "https://autosatai-backend-r4ol.onrender.com/natural-resources/info",
+          `${API_BASE}/api/natural-resources/info`,
           { location },
           { headers: { "Content-Type": "application/json" } }
         );

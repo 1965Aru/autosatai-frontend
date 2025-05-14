@@ -16,64 +16,82 @@ import { format } from "date-fns";
 import axios from "axios";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://autosatai-backend-r4ol.onrender.com";
+
+// ensure all axios calls point at your backend
+axios.defaults.baseURL = API_BASE;
 
 export default function NightLightsReportPage() {
   const router = useRouter();
-  const [state, setState] = useState({ loading: true, error: "", report: null });
+  const [state, setState] = useState({
+    loading: true,
+    error: "",
+    report: null,
+  });
 
   useEffect(() => {
-    const datasets        = JSON.parse(localStorage.getItem("datasets") || "[]");
+    const datasets = JSON.parse(localStorage.getItem("datasets") || "[]");
     const analysisResults = JSON
       .parse(localStorage.getItem("analysisResults") || "[]")
-      .filter(r => r.dataset_id.startsWith("night_lights"));
+      .filter((r) => r.dataset_id.startsWith("night_lights"));
 
     if (!datasets.length || !analysisResults.length) {
       setState({
         loading: false,
-        error: "No night-lights data found. Please fetch datasets and run analysis first.",
-        report: null
+        error:
+          "No night-lights data found. Please fetch datasets and run analysis first.",
+        report: null,
       });
       return;
     }
 
     axios
-      .post(`${API_BASE}/report/night-lights`, { datasets, analysisResults })
-      .then(res => {
-        const allReports = Array.isArray(res.data.reports) ? res.data.reports : [];
-        if (!allReports.length) throw new Error("No reports returned from server");
+      .post("/api/report/night-lights", { datasets, analysisResults })
+      .then((res) => {
+        const allReports = Array.isArray(res.data.reports)
+          ? res.data.reports
+          : [];
+        if (!allReports.length)
+          throw new Error("No reports returned from server");
         setState({ loading: false, error: "", report: allReports[0] });
       })
-      .catch(err => {
+      .catch((err) => {
         const msg = err.response?.data?.error || err.message;
         setState({ loading: false, error: msg, report: null });
       });
   }, []);
 
   const { loading, error, report } = state;
-  if (loading) return <div className="p-8 text-center">🔄 Generating report…</div>;
-  if (error)   return <div className="p-8 text-center text-red-600"><FaExclamationTriangle /> {error}</div>;
+  if (loading)
+    return <div className="p-8 text-center">🔄 Generating report…</div>;
+  if (error)
+    return (
+      <div className="p-8 text-center text-red-600">
+        <FaExclamationTriangle className="inline mr-1" /> {error}
+      </div>
+    );
 
   // top-level fields
   const {
     title,
     generated_at,
-    metadata,   // { location, date_range: { from, to }, datasets_count }
-    kpis,       // [ { name, value, suffix? } … ]
-    series,     // { dates:[], avg_radiance:[], pct_bright:[], lit_area_km2:[] }
-    anomalies   // [ { date, type, value } … ]
+    metadata,
+    kpis,
+    series,
+    anomalies,
   } = report;
 
-  // narrative sections under `report.report`
+  // narrative sections
   const {
     executive_summary,
     key_findings = [],
     methodology,
     spatial_summary,
-    recommendations
+    recommendations,
   } = report.report || {};
 
-  // print / email handlers
   const handlePrint = () => window.print();
   const handleEmail = () => {
     const body = encodeURIComponent(JSON.stringify(report, null, 2));
@@ -82,17 +100,23 @@ export default function NightLightsReportPage() {
 
   return (
     <main className="max-w-5xl mx-auto p-6 space-y-8">
-
       {/* Header */}
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-bold flex items-center">
-          <FaMoon className="mr-2 text-purple-600" />{title}
+          <FaMoon className="mr-2 text-purple-600" />
+          {title}
         </h1>
         <div className="space-x-2">
-          <button onClick={handlePrint} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+          <button
+            onClick={handlePrint}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          >
             <FaPrint className="inline mr-1" /> Print
           </button>
-          <button onClick={handleEmail} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button
+            onClick={handleEmail}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
             <FaEnvelope className="inline mr-1" /> Email
           </button>
         </div>
@@ -102,7 +126,9 @@ export default function NightLightsReportPage() {
       <p className="text-sm text-gray-500">
         Generated: {format(new Date(generated_at), "PPPpp")} &nbsp;•&nbsp;
         Location: {metadata.location} &nbsp;•&nbsp;
-        Period: {format(new Date(metadata.date_range.from), "MMM d, yyyy")} – {format(new Date(metadata.date_range.to), "MMM d, yyyy")} &nbsp;•&nbsp;
+        Period:{" "}
+        {format(new Date(metadata.date_range.from), "MMM d, yyyy")} –{" "}
+        {format(new Date(metadata.date_range.to), "MMM d, yyyy")} &nbsp;•&nbsp;
         Datasets: {metadata.datasets_count}
       </p>
 
@@ -120,13 +146,12 @@ export default function NightLightsReportPage() {
           </h2>
           <ul className="list-disc list-inside mt-2">
             {key_findings.map((kf, i) => {
-              // if kf is an object, render its fields; else render string
               if (typeof kf === "object" && kf !== null) {
                 return (
                   <li key={i}>
                     <strong>{kf.metric || "—"}</strong>
                     {kf.significance ? ` — ${kf.significance}` : ""}
-                    {kf.trend       ? ` (trend: ${kf.trend})` : ""}
+                    {kf.trend ? ` (trend: ${kf.trend})` : ""}
                   </li>
                 );
               }
@@ -156,7 +181,7 @@ export default function NightLightsReportPage() {
 
       {/* KPI Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map(k => (
+        {kpis.map((k) => (
           <div key={k.name} className="bg-white p-4 rounded shadow">
             <p className="text-xs text-gray-500">{k.name}</p>
             <p className="text-2xl font-semibold">
@@ -178,15 +203,15 @@ export default function NightLightsReportPage() {
               x: series.dates,
               y: series.avg_radiance,
               mode: "lines+markers",
-              name: "Avg Radiance"
+              name: "Avg Radiance",
             },
             {
               x: series.dates,
               y: series.pct_bright,
               mode: "lines",
               name: "% Bright Area",
-              yaxis: "y2"
-            }
+              yaxis: "y2",
+            },
           ]}
           layout={{
             margin: { t: 30, b: 40, l: 50, r: 60 },
@@ -194,7 +219,7 @@ export default function NightLightsReportPage() {
             yaxis: { title: "Radiance" },
             yaxis2: { title: "% Bright", overlaying: "y", side: "right" },
             paper_bgcolor: "rgba(0,0,0,0)",
-            plot_bgcolor: "rgba(255,255,255,0.9)"
+            plot_bgcolor: "rgba(255,255,255,0.9)",
           }}
           style={{ width: "100%", height: 350 }}
         />
@@ -213,7 +238,10 @@ export default function NightLightsReportPage() {
           </thead>
           <tbody>
             {anomalies.map((a, i) => (
-              <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+              <tr
+                key={i}
+                className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+              >
                 <td className="p-2">{format(new Date(a.date), "MMM d, yyyy")}</td>
                 <td className="p-2">{a.type}</td>
                 <td className="p-2">{a.value}</td>

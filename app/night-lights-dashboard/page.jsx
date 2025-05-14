@@ -91,7 +91,7 @@ export default function DashboardPage() {
         assets: { data: ds.assets.data },
       }));
 
-      fetch("/api/analyse-all-nights", {
+      fetch(`${API_BASE}/api/analyse-all-nights`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobs }),
@@ -223,7 +223,7 @@ export default function DashboardPage() {
 
     // call your Flask endpoint
     try {
-      const resp = await fetch(`${API_BASE}/report/night-lights`, {
+      const resp = await fetch(`${API_BASE}/api/report/night-lights`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ datasets, analysisResults }),
