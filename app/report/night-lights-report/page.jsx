@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import axios from "axios";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-cutv.onrender.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
 
 export default function NightLightsReportPage() {
   const router = useRouter();

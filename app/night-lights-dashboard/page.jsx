@@ -17,7 +17,7 @@ import {
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-cutv.onrender.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
 
 // Only load plotly on the client
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });

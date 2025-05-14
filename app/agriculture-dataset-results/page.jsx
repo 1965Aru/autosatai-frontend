@@ -7,7 +7,7 @@ import { FiDownload, FiExternalLink } from "react-icons/fi";
 
 // Ensure this points to your backend; you can override via NEXT_PUBLIC_API_BASE_URL in .env.local
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-cutv.onrender.com";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
 
 const AgricultureDatasetResultsPage = () => {
   const [datasets, setDatasets] = useState([]);
