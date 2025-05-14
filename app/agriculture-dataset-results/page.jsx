@@ -46,7 +46,7 @@ const AgricultureDatasetResultsPage = () => {
     setBusy(true);
 
     try {
-      const res = await fetch(`/api/agri/analyse`, {
+      const res = await fetch(`${API_BASE}/api/agri/analyse`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -123,7 +123,7 @@ const AgricultureDatasetResultsPage = () => {
         },
       }));
 
-      const res = await fetch(`/api/agri/analyse-all`, {
+      const res = await fetch(`${API_BASE}/api/agri/analyse-all`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobs }),
