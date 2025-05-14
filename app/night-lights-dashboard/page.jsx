@@ -223,7 +223,7 @@ export default function DashboardPage() {
 
     // call your Flask endpoint
     try {
-      const resp = await fetch(`${API_BASE}/api/report/night-lights`, {
+      const resp = await fetch(`${API_BASE}/report/night-lights`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ datasets, analysisResults }),
