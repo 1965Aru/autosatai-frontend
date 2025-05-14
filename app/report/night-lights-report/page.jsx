@@ -48,7 +48,7 @@ export default function NightLightsReportPage() {
     }
 
     axios
-      .post("/api/report/night-lights", { datasets, analysisResults })
+      .post("/report/night-lights", { datasets, analysisResults })
       .then((res) => {
         const allReports = Array.isArray(res.data.reports)
           ? res.data.reports
