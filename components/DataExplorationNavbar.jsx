@@ -348,7 +348,7 @@ const DataExplorationNavbar = () => {
 
       try {
         const res = await axios.post(
-          `${API_BASE}/api/natural-resources/info`,
+          `${API_BASE}/natural-resources/info`,
           { location },
           { headers: { "Content-Type": "application/json" } }
         );
