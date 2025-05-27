@@ -8,7 +8,7 @@ import { FaBars, FaArrowLeft } from "react-icons/fa";
 // Base URL for your backend API
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://autosatai-backend-r4ol.onrender.com";
+  "https://autosatai-backend.onrender.com";
 
 const DataExplorationNavbar = () => {
   const [showSidebar, setShowSidebar] = useState(false);

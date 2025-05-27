@@ -33,7 +33,7 @@ import {
 
 // ── report endpoint base ─────────────────────────────────────────────
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend-r4ol.onrender.com";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://autosatai-backend.onrender.com";
 
 // Custom components
 const CustomTooltip = ({ active, payload, label }) => {

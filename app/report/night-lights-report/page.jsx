@@ -18,7 +18,7 @@ import axios from "axios";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://autosatai-backend-r4ol.onrender.com";
+  "https://autosatai-backend.onrender.com";
 
 // ensure all axios calls point at your backend
 axios.defaults.baseURL = API_BASE;
